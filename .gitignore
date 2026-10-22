@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.pytest_cache/
+artifacts/
+*.pyc
+data/clearcut.sqlite3*
+.env
+.env.*
+!.env.example

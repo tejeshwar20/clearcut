@@ -1,0 +1,910 @@
+{
+  "generated_at": "2026-10-20T16:17:30.988057+00:00",
+  "requested": 100,
+  "saved_movies": 100,
+  "entries": {
+    "Breaking Bad": {
+      "id": 14426270,
+      "title": "Breaking Bad",
+      "direct_review_pages": 0,
+      "citations": 30
+    },
+    "Inception": {
+      "id": 23270459,
+      "title": "Inception",
+      "direct_review_pages": 1,
+      "citations": 31
+    },
+    "The Dark Knight": {
+      "id": 4276475,
+      "title": "The Dark Knight",
+      "direct_review_pages": 0,
+      "citations": 14
+    },
+    "Interstellar (film)": {
+      "id": 6009939,
+      "title": "Interstellar (film)",
+      "direct_review_pages": 1,
+      "citations": 28
+    },
+    "The Prestige (film)": {
+      "id": 2809621,
+      "title": "The Prestige",
+      "direct_review_pages": 0,
+      "citations": 22
+    },
+    "Dunkirk (2017 film)": {
+      "id": 48936686,
+      "title": "Dunkirk (2017 film)",
+      "direct_review_pages": 1,
+      "citations": 30
+    },
+    "Oppenheimer (film)": {
+      "id": 66850554,
+      "title": "Oppenheimer (film)",
+      "direct_review_pages": 0,
+      "citations": 30
+    },
+    "Memento (film)": {
+      "id": 2750041,
+      "title": "Memento (film)",
+      "direct_review_pages": 0,
+      "citations": 16
+    },
+    "Tenet (film)": {
+      "id": 59770239,
+      "title": "Tenet",
+      "direct_review_pages": 1,
+      "citations": 30
+    },
+    "The Shawshank Redemption": {
+      "id": 30625,
+      "title": "The Shawshank Redemption",
+      "direct_review_pages": 0,
+      "citations": 13
+    },
+    "The Godfather Part II": {
+      "id": 73875,
+      "title": "The Godfather Part II",
+      "direct_review_pages": 0,
+      "citations": 8
+    },
+    "Goodfellas": {
+      "id": 64394,
+      "title": "Goodfellas",
+      "direct_review_pages": 0,
+      "citations": 8
+    },
+    "Reservoir Dogs": {
+      "id": 297111,
+      "title": "Reservoir Dogs",
+      "direct_review_pages": 0,
+      "citations": 16
+    },
+    "Inglourious Basterds": {
+      "id": 633052,
+      "title": "Inglourious Basterds",
+      "direct_review_pages": 1,
+      "citations": 26
+    },
+    "Django Unchained": {
+      "id": 31638720,
+      "title": "Django Unchained",
+      "direct_review_pages": 1,
+      "citations": 13
+    },
+    "Once Upon a Time in Hollywood": {
+      "id": 56717294,
+      "title": "Once Upon a Time in Hollywood",
+      "direct_review_pages": 1,
+      "citations": 21
+    },
+    "Fight Club": {
+      "id": 1009041,
+      "title": "Fight Club",
+      "direct_review_pages": 0,
+      "citations": 10
+    },
+    "Se7en": {
+      "id": 206818,
+      "title": "Seven (1995 film)",
+      "direct_review_pages": 0,
+      "citations": 19
+    },
+    "Zodiac (film)": {
+      "id": 2654186,
+      "title": "Zodiac (film)",
+      "direct_review_pages": 0,
+      "citations": 25
+    },
+    "The Social Network": {
+      "id": 24319139,
+      "title": "The Social Network",
+      "direct_review_pages": 1,
+      "citations": 17
+    },
+    "The Girl with the Dragon Tattoo (2011 film)": {
+      "id": 28387289,
+      "title": "The Girl with the Dragon Tattoo (2011 film)",
+      "direct_review_pages": 0,
+      "citations": 17
+    },
+    "Forrest Gump": {
+      "id": 41528,
+      "title": "Forrest Gump",
+      "direct_review_pages": 0,
+      "citations": 15
+    },
+    "Schindler's List": {
+      "id": 65834,
+      "title": "Schindler's List",
+      "direct_review_pages": 0,
+      "citations": 5
+    },
+    "Jurassic Park (film)": {
+      "id": 68485,
+      "title": "Jurassic Park",
+      "direct_review_pages": 0,
+      "citations": 7
+    },
+    "Jaws (film)": {
+      "id": 74830,
+      "title": "Jaws (film)",
+      "direct_review_pages": 0,
+      "citations": 7
+    },
+    "Raiders of the Lost Ark": {
+      "id": 54166,
+      "title": "Raiders of the Lost Ark",
+      "direct_review_pages": 0,
+      "citations": 19
+    },
+    "Catch Me If You Can": {
+      "id": 215873,
+      "title": "Catch Me If You Can",
+      "direct_review_pages": 0,
+      "citations": 9
+    },
+    "Eternal Sunshine of the Spotless Mind": {
+      "id": 537024,
+      "title": "Eternal Sunshine of the Spotless Mind",
+      "direct_review_pages": 0,
+      "citations": 21
+    },
+    "Lost in Translation (film)": {
+      "id": 369682,
+      "title": "Lost in Translation",
+      "direct_review_pages": 0,
+      "citations": 18
+    },
+    "Blade Runner 2049": {
+      "id": 39830741,
+      "title": "Blade Runner 2049",
+      "direct_review_pages": 1,
+      "citations": 30
+    },
+    "Dune (2021 film)": {
+      "id": 52659577,
+      "title": "Dune (2021 film)",
+      "direct_review_pages": 1,
+      "citations": 17
+    },
+    "Dune: Part Two": {
+      "id": 63790171,
+      "title": "Dune: Part Two",
+      "direct_review_pages": 0,
+      "citations": 19
+    },
+    "Mad Max: Fury Road": {
+      "id": 36426373,
+      "title": "Mad Max: Fury Road",
+      "direct_review_pages": 1,
+      "citations": 13
+    },
+    "The Matrix": {
+      "id": 30007,
+      "title": "The Matrix",
+      "direct_review_pages": 0,
+      "citations": 20
+    },
+    "The Terminator": {
+      "id": 30327,
+      "title": "The Terminator",
+      "direct_review_pages": 1,
+      "citations": 16
+    },
+    "Terminator 2: Judgment Day": {
+      "id": 34344124,
+      "title": "Terminator 2: Judgment Day",
+      "direct_review_pages": 0,
+      "citations": 6
+    },
+    "Star Wars (film)": {
+      "id": 52549,
+      "title": "Star Wars (film)",
+      "direct_review_pages": 0,
+      "citations": 25
+    },
+    "The Empire Strikes Back": {
+      "id": 53964,
+      "title": "The Empire Strikes Back",
+      "direct_review_pages": 0,
+      "citations": 17
+    },
+    "Rogue One": {
+      "id": 44217612,
+      "title": "Rogue One",
+      "direct_review_pages": 2,
+      "citations": 22
+    },
+    "The Lord of the Rings: The Fellowship of the Ring": {
+      "id": 173941,
+      "title": "The Lord of the Rings: The Fellowship of the Ring",
+      "direct_review_pages": 0,
+      "citations": 16
+    },
+    "The Lord of the Rings: The Two Towers": {
+      "id": 173944,
+      "title": "The Lord of the Rings: The Two Towers",
+      "direct_review_pages": 0,
+      "citations": 15
+    },
+    "The Lord of the Rings: The Return of the King": {
+      "id": 174251,
+      "title": "The Lord of the Rings: The Return of the King",
+      "direct_review_pages": 0,
+      "citations": 21
+    },
+    "Harry Potter and the Philosopher's Stone (film)": {
+      "id": 667361,
+      "title": "Harry Potter and the Philosopher's Stone (film)",
+      "direct_review_pages": 0,
+      "citations": 16
+    },
+    "Harry Potter and the Prisoner of Azkaban (film)": {
+      "id": 667371,
+      "title": "Harry Potter and the Prisoner of Azkaban (film)",
+      "direct_review_pages": 0,
+      "citations": 17
+    },
+    "The Shape of Water": {
+      "id": 49834236,
+      "title": "The Shape of Water",
+      "direct_review_pages": 0,
+      "citations": 8
+    },
+    "Everything Everywhere All at Once": {
+      "id": 58342225,
+      "title": "Everything Everywhere All at Once",
+      "direct_review_pages": 2,
+      "citations": 21
+    },
+    "Memories of Murder": {
+      "id": 2746792,
+      "title": "Memories of Murder",
+      "direct_review_pages": 1,
+      "citations": 17
+    },
+    "The Handmaiden": {
+      "id": 48547741,
+      "title": "The Handmaiden",
+      "direct_review_pages": 1,
+      "citations": 12
+    },
+    "Princess Mononoke": {
+      "id": 24653,
+      "title": "Princess Mononoke",
+      "direct_review_pages": 0,
+      "citations": 0
+    },
+    "Howl's Moving Castle (film)": {
+      "id": 3903364,
+      "title": "Howl's Moving Castle (film)",
+      "direct_review_pages": 0,
+      "citations": 0
+    },
+    "Your Name": {
+      "id": 49375437,
+      "title": "Your Name",
+      "direct_review_pages": 0,
+      "citations": 12
+    },
+    "Akira (1988 film)": {
+      "id": 605939,
+      "title": "Akira (1988 film)",
+      "direct_review_pages": 0,
+      "citations": 13
+    },
+    "Toy Story": {
+      "id": 53085,
+      "title": "Toy Story",
+      "direct_review_pages": 0,
+      "citations": 22
+    },
+    "Finding Nemo": {
+      "id": 239587,
+      "title": "Finding Nemo",
+      "direct_review_pages": 0,
+      "citations": 30
+    },
+    "WALL-E": {
+      "id": 8980330,
+      "title": "WALL-E",
+      "direct_review_pages": 0,
+      "citations": 24
+    },
+    "Up (2009 film)": {
+      "id": 11659396,
+      "title": "Up (2009 film)",
+      "direct_review_pages": 0,
+      "citations": 30
+    },
+    "Inside Out (2015 film)": {
+      "id": 38751266,
+      "title": "Inside Out",
+      "direct_review_pages": 1,
+      "citations": 18
+    },
+    "Coco (2017 film)": {
+      "id": 47532661,
+      "title": "Coco (2017 film)",
+      "direct_review_pages": 0,
+      "citations": 16
+    },
+    "Ratatouille (film)": {
+      "id": 14941280,
+      "title": "Ratatouille (film)",
+      "direct_review_pages": 0,
+      "citations": 30
+    },
+    "Spider-Man: Into the Spider-Verse": {
+      "id": 47069739,
+      "title": "Spider-Man: Into the Spider-Verse",
+      "direct_review_pages": 0,
+      "citations": 13
+    },
+    "Spider-Man: Across the Spider-Verse": {
+      "id": 59183000,
+      "title": "Spider-Man: Across the Spider-Verse",
+      "direct_review_pages": 0,
+      "citations": 12
+    },
+    "The Incredibles": {
+      "id": 565879,
+      "title": "The Incredibles",
+      "direct_review_pages": 0,
+      "citations": 30
+    },
+    "The Lion King (1994 film)": {
+      "id": 88678,
+      "title": "The Lion King",
+      "direct_review_pages": 0,
+      "citations": 20
+    },
+    "Shrek": {
+      "id": 18717177,
+      "title": "Shrek",
+      "direct_review_pages": 0,
+      "citations": 30
+    },
+    "How to Train Your Dragon (2010 film)": {
+      "id": 18394730,
+      "title": "How to Train Your Dragon (2010 film)",
+      "direct_review_pages": 0,
+      "citations": 14
+    },
+    "3 Idiots": {
+      "id": 17927503,
+      "title": "3 Idiots",
+      "direct_review_pages": 0,
+      "citations": 14
+    },
+    "Dangal (2016 film)": {
+      "id": 45266920,
+      "title": "Dangal (2016 film)",
+      "direct_review_pages": 0,
+      "citations": 30
+    },
+    "Lagaan": {
+      "id": 381810,
+      "title": "Lagaan",
+      "direct_review_pages": 1,
+      "citations": 15
+    },
+    "Taare Zameen Par": {
+      "id": 8843403,
+      "title": "Taare Zameen Par",
+      "direct_review_pages": 0,
+      "citations": 13
+    },
+    "Dil Chahta Hai": {
+      "id": 1393318,
+      "title": "Dil Chahta Hai",
+      "direct_review_pages": 0,
+      "citations": 16
+    },
+    "Zindagi Na Milegi Dobara": {
+      "id": 29525315,
+      "title": "Zindagi Na Milegi Dobara",
+      "direct_review_pages": 0,
+      "citations": 16
+    },
+    "Piku": {
+      "id": 42367321,
+      "title": "Piku",
+      "direct_review_pages": 0,
+      "citations": 16
+    },
+    "RRR": {
+      "id": 59329596,
+      "title": "RRR",
+      "direct_review_pages": 0,
+      "citations": 30
+    },
+    "Baahubali: The Beginning": {
+      "id": 38222746,
+      "title": "Baahubali: The Beginning",
+      "direct_review_pages": 0,
+      "citations": 15
+    },
+    "Baahubali 2: The Conclusion": {
+      "id": 47595794,
+      "title": "Baahubali 2: The Conclusion",
+      "direct_review_pages": 0,
+      "citations": 20
+    },
+    "Drishyam (2013 film)": {
+      "id": 40371119,
+      "title": "Drishyam",
+      "direct_review_pages": 0,
+      "citations": 10
+    },
+    "Drishyam (2015 film)": {
+      "id": 46296657,
+      "title": "Drishyam (2015 film)",
+      "direct_review_pages": 0,
+      "citations": 10
+    },
+    "Drishyam 2": {
+      "id": 64074070,
+      "title": "Drishyam 2",
+      "direct_review_pages": 0,
+      "citations": 18
+    },
+    "Super Deluxe (film)": {
+      "id": 52205183,
+      "title": "Super Deluxe (film)",
+      "direct_review_pages": 0,
+      "citations": 19
+    },
+    "Vikram Vedha": {
+      "id": 52300193,
+      "title": "Vikram Vedha",
+      "direct_review_pages": 0,
+      "citations": 18
+    },
+    "Jai Bhim (film)": {
+      "id": 68505558,
+      "title": "Jai Bhim (film)",
+      "direct_review_pages": 0,
+      "citations": 14
+    },
+    "Sita Ramam": {
+      "id": 70533080,
+      "title": "Sita Ramam",
+      "direct_review_pages": 0,
+      "citations": 16
+    },
+    "Kantara (film)": {
+      "id": 71877851,
+      "title": "Kantara (2022 film)",
+      "direct_review_pages": 0,
+      "citations": 6
+    },
+    "The Grand Budapest Hotel": {
+      "id": 38041226,
+      "title": "The Grand Budapest Hotel",
+      "direct_review_pages": 0,
+      "citations": 19
+    },
+    "Moonrise Kingdom": {
+      "id": 31462588,
+      "title": "Moonrise Kingdom",
+      "direct_review_pages": 1,
+      "citations": 22
+    },
+    "City of God (2002 film)": {
+      "id": 461322,
+      "title": "City of God (2002 film)",
+      "direct_review_pages": 0,
+      "citations": 26
+    },
+    "The Lives of Others": {
+      "id": 5454803,
+      "title": "The Lives of Others",
+      "direct_review_pages": 0,
+      "citations": 22
+    },
+    "A Separation": {
+      "id": 30547958,
+      "title": "A Separation",
+      "direct_review_pages": 0,
+      "citations": 21
+    },
+    "Roma (2018 film)": {
+      "id": 51550709,
+      "title": "Roma (2018 film)",
+      "direct_review_pages": 1,
+      "citations": 7
+    },
+    "Crouching Tiger, Hidden Dragon": {
+      "id": 5313,
+      "title": "Crouching Tiger, Hidden Dragon",
+      "direct_review_pages": 0,
+      "citations": 8
+    },
+    "Nope (film)": {
+      "id": 66260186,
+      "title": "Nope (film)",
+      "direct_review_pages": 1,
+      "citations": 15
+    },
+    "A Quiet Place (film)": {
+      "id": 54470227,
+      "title": "A Quiet Place",
+      "direct_review_pages": 1,
+      "citations": 12
+    },
+    "The Witch (2015 film)": {
+      "id": 45379583,
+      "title": "The Witch (2015 film)",
+      "direct_review_pages": 0,
+      "citations": 26
+    },
+    "The Lighthouse (2019 film)": {
+      "id": 57076513,
+      "title": "The Lighthouse (2019 film)",
+      "direct_review_pages": 2,
+      "citations": 12
+    },
+    "The Sixth Sense": {
+      "id": 30582,
+      "title": "The Sixth Sense",
+      "direct_review_pages": 0,
+      "citations": 9
+    },
+    "The Others (2001 film)": {
+      "id": 1267713,
+      "title": "The Others (2001 film)",
+      "direct_review_pages": 0,
+      "citations": 9
+    },
+    "Iron Man (2008 film)": {
+      "id": 5676692,
+      "title": "Iron Man (2008 film)",
+      "direct_review_pages": 0,
+      "citations": 14
+    },
+    "The Avengers (2012 film)": {
+      "id": 22114132,
+      "title": "The Avengers (2012 film)",
+      "direct_review_pages": 0,
+      "citations": 15
+    },
+    "Guardians of the Galaxy (film)": {
+      "id": 36450985,
+      "title": "Guardians of the Galaxy (film)",
+      "direct_review_pages": 0,
+      "citations": 16
+    },
+    "Logan (film)": {
+      "id": 43655965,
+      "title": "Logan (film)",
+      "direct_review_pages": 1,
+      "citations": 25
+    }
+  },
+  "failures": [
+    {
+      "title": "The Godfather",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Pulp Fiction",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Kill Bill: Volume 1",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Gone Girl (film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Saving Private Ryan",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "E.T. the Extra-Terrestrial",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "The Truman Show",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Her (film)",
+      "error": "No dedicated critical-reception section is available for this title. Try another title or use manual reviews."
+    },
+    {
+      "title": "Arrival (film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Blade Runner",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Alien (film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Aliens (film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Back to the Future",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Return of the Jedi",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Pan's Labyrinth",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Parasite (2019 film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Oldboy (2003 film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Train to Busan",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Burning (film)",
+      "error": "No dedicated critical-reception section is available for this title. Try another title or use manual reviews."
+    },
+    {
+      "title": "Spirited Away",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "My Neighbor Totoro",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "A Silent Voice (film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Grave of the Fireflies",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Toy Story 3",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "PK (film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Swades",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Queen (2013 film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "The Lunchbox",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Andhadhun",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Gully Boy",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Kahaani",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Barfi!",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Eega",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Fantastic Mr. Fox (film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Whiplash (2014 film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "La La Land",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Birdman (film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Black Swan (film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "The King's Speech",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "The Imitation Game",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "A Beautiful Mind (film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Little Women (2019 film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Lady Bird (film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Frances Ha",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Marriage Story",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Aftersun",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Past Lives (film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "The Holdovers",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Anatomy of a Fall",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Am\u00e9lie",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Cinema Paradiso",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Life Is Beautiful",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Get Out",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Us (2019 film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "The Babadook",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "The Shining (film)",
+      "error": "No dedicated critical-reception section is available for this title. Try another title or use manual reviews."
+    },
+    {
+      "title": "The Silence of the Lambs (film)",
+      "error": "Too little spoiler-safe aspect evidence for a useful catalog review."
+    },
+    {
+      "title": "Knives Out",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Glass Onion: A Knives Out Mystery",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "The Nice Guys",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Hot Fuzz",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Shaun of the Dead",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Baby Driver",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Scott Pilgrim vs. the World",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Paddington (film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Paddington 2",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "The Iron Giant",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "The Wild Robot",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Soul (2020 film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Luca (2021 film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Turning Red",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Moana (2016 film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Zootopia",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Frozen (2013 film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    },
+    {
+      "title": "Black Panther (film)",
+      "error": "Source HTTP 429; access restrictions and retry instructions are respected."
+    }
+  ],
+  "policy": "Real source evidence only. No raw reviews or story setup stored. Direct and Wikipedia-cited sources are distinguished."
+}
