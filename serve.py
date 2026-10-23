@@ -43,6 +43,9 @@ def main():
     seed = os.environ.get("CLEARCUT_SEED_PATH", str(Path(__file__).parent / "data" / "catalog_seed.json"))
     restored = bootstrap_catalog(movie_report_store(), seed)
     logging.getLogger(__name__).info("Catalog startup: restored %d reports", restored)
+    import semantic
+
+    logging.getLogger(__name__).info("Semantic spoiler check: %s", "on" if semantic.available() else "off (rules only)")
     port = int(os.environ.get("PORT", "8080"))
     threads = int(os.environ.get("CLEARCUT_THREADS", "8"))
     if not 1 <= port <= 65535 or not 2 <= threads <= 32:

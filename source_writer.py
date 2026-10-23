@@ -9,6 +9,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 from pipeline import EVENTS, GENRE_CUES, SENTIMENT, TOKEN, enforce_reader_output, infer_review_title, normalize
 from scoring import build_analyzer, estimate_score
+import semantic
 
 
 FEATURES = {
@@ -224,6 +225,17 @@ def has_opinion(tokens):
         if token.pos_ in {"ADJ", "ADV"} and lower not in FACTUAL and abs(REVIEW_SENTIMENT.lexicon.get(lower, 0)) >= 1:
             return True
     return False
+
+
+FILM_NOUNS = {"film", "movie", "show", "series", "episode", "season", "picture", "director", "filmmaker", "cast", "actor", "actress", "audience", "viewer"}
+
+
+def talks_about_film(sentence):
+    """The sentence is about the film or the viewing (craft, cast, the reviewer), not inside the story."""
+    return any(
+        token.lemma_.lower() in FEATURES or token.lemma_.lower() in FILM_NOUNS or token.lower_ in {"i", "me", "my", "we", "us", "you", "your"}
+        for token in sentence
+    )
 
 
 def reference_only(sentence, start, end):
@@ -528,6 +540,8 @@ def extract_opinions(reviews, entities):
     titles = []
     passages = []
     current = [None]
+    semantic_hits = []
+    extract_opinions.semantic_hits = semantic_hits
 
     def retain(subject, description, text, review_index, confidence, names=()):
         text = re.sub(r"\s+", " ", text).strip().rstrip(".,;:") + "."
@@ -554,7 +568,10 @@ def extract_opinions(reviews, entities):
         titles.append(inferred_title(doc))
         previous_spoiler = False
         teaser_pending = False
-        for sentence in doc.sents:
+        sentences = list(doc.sents)
+        # Semantic safety net: meaning-based plot-event score for every sentence, batched per review.
+        margins = semantic.plot_margins([sentence.text for sentence in sentences])
+        for sentence, margin in zip(sentences, margins):
             current[0] = (review_index, sentence.start)
             if TEASER.match(sentence.text):
                 # "The twist?" introduces a spoiler: drop it and treat the next sentence as one.
@@ -562,6 +579,9 @@ def extract_opinions(reviews, entities):
                 continue
             kept = redact_sentence(sentence, entities)
             if kept and (teaser_pending or (previous_spoiler and CONTINUATION.match(sentence.text))):
+                kept = ""
+            if kept and semantic.is_plot_event(margin, talks_about_film(sentence)):
+                semantic_hits.append({"sentence": sentence.text, "margin": round(margin, 3)})
                 kept = ""
             teaser_pending = False
             previous_spoiler = not kept or kept.strip() != sentence.text.strip()
@@ -707,6 +727,12 @@ def write_source_review(report, reviews, entities, title):
         writer={"provider": "local", "mode": "source_grounded", "status": "ready" if paragraphs else "insufficient_opinion"},
         opinion_evidence=[{key: item[key] for key in ("subject", "description", "text", "review")} for item in selected],
         overall={"tone": "positive" if value is not None and value > 0.2 else "negative" if value is not None and value < -0.2 else "mixed" if value is not None else "insufficient", "safe_opinion_sentences": len(selected)},
+        spoiler_detection={
+            "rules": True,
+            "semantic": semantic.available(),
+            "semantic_model": semantic.MODEL_NAME if semantic.available() else None,
+            "semantic_withheld": len(getattr(extract_opinions, "semantic_hits", [])),
+        },
     )
     original = "\n\n".join(re.sub(r"[*_`]", "", review["text"]) for review in cleaned if review.get("confidence", 1) != 0)
     rewritten = model_rewrite(original, passages, entities)
