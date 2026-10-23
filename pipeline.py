@@ -30,7 +30,7 @@ EVENTS = re.compile(
     r"suicide|survives?|survived|reveals?|revealed|revelation|turns? out|"
     r"identity|secretly|twist|spoiler\w*|resurrect\w*|pregnant|"
     r"marri\w*|wedding|divorc\w*|escapes?|escaped|arrest\w*|"
-    r"defeats?|defeated|sacrific\w*|dream|flashback|is actually|was actually|"
+    r"defeats?|defeated|sacrific\w*|dream(?!\s+(?:sequences?|logic|team|cast|come|role|project|like|-like))|is actually|was actually|"
     r"discovers?|learns?|finds out|unmasked|confesses?|reunites?|"
     r"captured|rescued|unravels?|becomes? the|ends up|"
     r"in the end|at the end|by the end|final scene|last scene|"

@@ -53,6 +53,35 @@ OUTCOMES = re.compile(
     r"(?:turns?|turned|turning)(?:\s+\w+){0,2}\s+into|"
     r"(?:dark|shocking|sharp|sudden|unexpected|tragic|violent|brutal)\s*,?\s*(?:\w+\s+)?turn)\b", re.I,
 )
+# Reveal-style spoilers that the keyword lists miss: identity/family reveals, "it was all a dream",
+# hidden-all-along twists and explicit spoiler markers. Any sentence containing one is withheld.
+HIDDEN_REVEALS = re.compile(
+    r"\b(?:is|was|are|were)\s+(?:actually\s+|really\s+|secretly\s+|in fact\s+)?(?:[A-Z]\w+'s|his|her|their)\s+"
+    r"(?:real\s+|biological\s+|long-lost\s+|twin\s+)?(?:father|mother|dad|mom|mum|son|daughter|brother|sister|twin|parent|wife|husband|child)\b(?!')|"
+    r"\ball along\b|"
+    r"\b(?:was|were|had|been)\b[^.;!?]{0,40}\b(?:the whole time|the entire time|from the (?:very )?(?:start|beginning))\b|"
+    r"\b(?:was|were|is|all)\s+(?:just\s+|only\s+|really\s+)?(?:all\s+)?(?:a\s+)?(?:simulation|hallucination|figment|illusion|delusion|"
+    r"dream(?!\s+(?:to|come|cast|team|of a))|imaginary|imagined)\b|"
+    r"\b(?:was|were|is|all)\s+(?:just\s+|only\s+|happening\s+)?(?:in|inside)\s+(?:his|her|their)\s+(?:head|mind|imagination)\b|"
+    r"\bbehind (?:it all|everything|the (?:murders?|killings?|attacks?|crimes?))\b|"
+    r"\b(?:realis|realiz)(?:es|ed|ing)\s+(?:that|the|he|she|they|it|his|her|their|what|who)\b|"
+    r"\bwakes? up\s+(?:in|and|to find)\b|"
+    r"\b(?:has|had|have|dies of|died of|diagnosed with|battling)\s+(?:a\s+)?(?:terminal\s+)?(?:cancer|tumou?r|illness|disease|amnesia|dementia|alzheimer\w*)\b|"
+    r"\bspoilers?\s*(?:alert|warning)?\s*[:!\u2014-]|\bspoilers? ahead\b",
+    re.I,
+)
+# What happens to a character. Only the clause that contains it is removed.
+CHARACTER_FATES = re.compile(
+    r"\b(?:does|did|do)(?:n't| not)\s+(?:make it(?=\s*(?:[.,;!]|and\b|out\b|alive\b|home\b|through\b|back\b))|survive|come back|return|wake up|recover)\b|"
+    r"\bnever\s+(?:walks|wakes|returns|comes back|recovers|sees (?:him|her|them)|speaks)\b|"
+    r"\bloses?\s+(?:his|her|their)\s+(?:arm|leg|eye|hand|sight|hearing|memory|mind|son|daughter|wife|husband|family|child|baby)\b|"
+    r"\bfreez\w*\s+(?:to death|in the water)\b|"
+    r"(?<!never )\blets? go\b(?=\s*[.,;!]|\s+of\s+(?:his|her|their|him|the))|"
+    r"\b(?:gets?|got|is|was|are|were)\s+(?:shot|killed|murdered|arrested|executed|captured|caught|stabbed|hanged|poisoned|framed|paralysed|paralyzed)\b|"
+    r"\bhid(?:es)?\s+(?:it|this|the truth|the secret)\b|"
+    r"\bonly\s+(?:the|his|her|their)\s+\w+\s+survives?\b",
+    re.I,
+)
 HINTS = {"initially", "ostensibly", "seemingly", "supposedly"}
 CLAUSE_UNITS = {"advcl", "relcl", "conj", "parataxis", "appos", "prep", "acl", "npadvmod", "dative"}
 REVIEW_SENTIMENT = SentimentIntensityAnalyzer()
@@ -130,7 +159,7 @@ def inferred_title(doc):
 
 def cue_spans(text, entities):
     exempt = [match.span() for match in GENRE_CUES.finditer(text)]
-    patterns = [(REVEALS, True), (EVENTS, False), (DISCLOSURES, False), (OUTCOMES, False)]
+    patterns = [(REVEALS, True), (HIDDEN_REVEALS, True), (EVENTS, False), (DISCLOSURES, False), (OUTCOMES, False), (CHARACTER_FATES, False)]
     patterns += [(re.compile(r"(?<!\w)" + re.escape(entity) + r"(?!\w)", re.I), False) for entity in entities]
     spans = []
     for pattern, severe in patterns:
@@ -182,8 +211,13 @@ def salvage_opening(sentence, entities):
 
 def redact_sentence(sentence, entities):
     """Return the sentence without spoiler clauses, or "" when it cannot be kept."""
+    spans = cue_spans(sentence.text, entities)
+    # Sentences with no spoiler cue are kept exactly as the reviewer wrote them.
+    if not spans and not any(token.lower_ in HINTS and token.dep_ == "advmod" for token in sentence):
+        text = sentence.text.strip()
+        return text if TOKEN.search(text) else ""
     removed = set()
-    for start, end, severe in cue_spans(sentence.text, entities):
+    for start, end, severe in spans:
         span = sentence.char_span(start, end, alignment_mode="expand")
         if span is None:
             continue
@@ -260,7 +294,67 @@ def moment_phrase(sentence):
         return "the ending"
     if re.search(r"\b(?:twist|reveal\w*|revelation|turns? out|is actually|was actually|all along|real identity|true nature|unmask\w*|discover\w*|uncover\w*|finds? out|learns? that)\b", text):
         return "the final surprise" if re.search(r"\b(?:final|last|ultimate)\b", text) else "the big surprise"
+    if HIDDEN_REVEALS.search(sentence.text):
+        return "the big surprise"
     return "a pivotal turn in the story"
+
+
+PERSONAL = {"i", "me", "my", "we", "us", "our", "you", "your"}
+RELATIVE = {"which", "that", "this", "it", "what"}
+
+
+def reaction_clause(sentence, entities, moment):
+    """Keep the reviewer's reaction clause from a spoiler sentence, pointing it at a vague moment.
+
+    "It was all a simulation, which blew my mind."  -> "The big reveal blew my mind."
+    "X is Y's father, and that scene gives me chills." -> "The big reveal gives me chills."
+    "Turns out X was the villain, which I didn't see coming." -> "I didn't see the big surprise coming."
+    "The dog doesn't survive, so bring tissues." -> "The story takes an emotional turn, so bring tissues."
+    """
+    for token in sentence:
+        if token.dep_ not in {"relcl", "conj", "advcl", "ccomp", "parataxis"} or token.pos_ not in {"VERB", "AUX"}:
+            continue
+        clause = [part for part in token.subtree if not (part.is_punct and part.i in (token.left_edge.i, token.right_edge.i) and part.text != "!")]
+        text = "".join(part.text_with_ws for part in clause).strip()
+        if not text or cue_spans(text, entities):
+            continue
+        personal = any(part.lower_ in PERSONAL for part in clause)
+        imperative = token.tag_ == "VB" and not any(child.dep_ in {"nsubj", "nsubjpass", "aux"} for child in token.children)
+        emotional = bool(re.search(r"\b(?:tissues?|cry|cried|crying|tears|sob\w*|chills?|goosebumps)\b", text, re.I))
+        if not (personal or imperative or emotional) and abs(REVIEW_SENTIMENT.polarity_scores(text)["compound"]) < 0.05:
+            continue
+        # A participle that only describes the hidden fact ("hiding in plain sight") is part of the spoiler.
+        if token.dep_ == "advcl" and token.tag_ in {"VBG", "VBN"} and not (personal or emotional):
+            continue
+        connectors = {part.i for part in clause if part.head == token and part.i < token.i and part.dep_ in {"cc", "mark"} and part.lower_ in {"and", "but", "which", "that", "as", "while", "so"}}
+        subjects = [child for child in token.children if child.dep_ in {"nsubj", "nsubjpass"}]
+        objects = [child for child in token.children if child.dep_ in {"dobj", "pobj"} and child.lower_ in RELATIVE]
+        subject = subjects[0] if subjects else None
+        demonstrative = subject is not None and (subject.lower_ in RELATIVE or any(det.lower_ in {"that", "this"} for det in subject.children if det.dep_ == "det"))
+        if demonstrative:
+            skip = connectors | {part.i for part in subject.subtree}
+            rest = "".join(part.text_with_ws for part in clause if part.i not in skip).strip()
+            return tidy(moment + " " + rest)
+        if objects and subject is not None and subject.lower_ in PERSONAL:
+            skip = connectors | {objects[0].i}
+            words = []
+            for part in clause:
+                if part.i in skip:
+                    continue
+                words.append(part.text_with_ws)
+                if part == token:
+                    words.append(moment + " ")
+            return tidy("".join(words))
+        if subject is None and token.dep_ in {"conj", "advcl", "parataxis"} and (imperative or emotional or personal):
+            lead = "The story takes an emotional turn" if emotional else "The story takes a significant turn"
+            before = sentence.doc[max(sentence.start, token.left_edge.i - 2):token.left_edge.i]
+            joiner = ", so " if any(part.lower_ == "so" for part in list(before) + [part for part in clause if part.i < token.i]) else ", "
+            rest = "".join(part.text_with_ws for part in clause if part.i not in connectors and part.lower_ != "so").strip()
+            return tidy(lead + joiner + rest)
+        if subject is not None and subject.lower_ in {"i", "we"}:
+            rest = "".join(part.text_with_ws for part in clause if part.i not in connectors).strip()
+            return tidy(rest)
+    return None
 
 
 def join_words(words):
@@ -283,10 +377,16 @@ def rephrase_spoiler(sentence, entities):
         head = [token for token in sentence if token == root or (token.head == root and token.dep_ in {"nsubj", "nsubjpass", "aux", "auxpass", "neg"})]
         reaction = "".join(token.text_with_ws for token in head).strip()
         return tidy(reaction + (" by " if root.tag_ == "VBN" else " ") + moment), True
+    salvaged = reaction_clause(sentence, entities, moment)
+    # The vague moment phrase itself ("the big reveal", "the ending") is safe; check only the reviewer's words.
+    if salvaged and not cue_spans(re.sub(re.escape(moment), "", salvaged, flags=re.I), entities):
+        return salvaged, True
     predicates = [child for child in root.children if child.dep_ in {"acomp", "oprd"}]
     predicates += [conj for predicate in predicates for conj in predicate.conjuncts]
     words = [word for word in (appraisal_word(token) for token in sorted(set(predicates), key=lambda token: token.i)) if word]
-    if words and root.lemma_ == "be":
+    # Praise for a craft feature ("the visual effects are stunning") must not be moved onto the plot.
+    craft_subject = any(part.lemma_.lower() in FEATURES for subject in subjects for part in subject.subtree)
+    if words and root.lemma_ == "be" and not craft_subject:
         return tidy(moment + " is " + join_words(words)), True
     for token in sentence:
         if token.lemma_.lower() in {"climax", "finale", "ending", "conclusion"}:
