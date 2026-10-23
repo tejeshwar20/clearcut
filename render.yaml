@@ -3,7 +3,7 @@ services:
     name: clearcut
     runtime: docker
     dockerfilePath: ./Dockerfile
-    plan: starter
+    plan: free
     healthCheckPath: /healthz
     autoDeploy: true
     envVars:
