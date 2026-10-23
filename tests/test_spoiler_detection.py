@@ -25,6 +25,7 @@ def review(text):
     ("The score is incredible. Spoiler: the aliens were humans from the future.", ["aliens", "humans", "future"]),
     ("Heartfelt drama. Their mother had cancer all along and hid it from them.", ["cancer", "mother"]),
     ("The visual effects are stunning, but I hated that the main character dies at the end.", ["dies", "main character"]),
+    ("The acting is superb. Amy faked her own disappearance to frame Nick for murder.", ["faked", "frame", "disappearance"]),
 ])
 def test_hidden_spoilers_are_removed(text, forbidden):
     output = review(text).lower()

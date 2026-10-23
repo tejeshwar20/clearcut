@@ -68,7 +68,7 @@ def test_spoiler_heavy_reviews_keep_original_opinions_and_drop_spoilers(text, ke
         assert phrase in review
     for term in forbidden:
         assert term.lower() not in review.lower()
-    assert report["overall_score"] is not None and report["overall_score"] > 5
+    assert "overall_score" not in report
 
 
 @pytest.mark.parametrize("text", [
@@ -80,11 +80,9 @@ def test_craft_praise_with_cue_like_words_is_not_removed(text):
     assert analyze_reader_review([text])["review"] == text
 
 
-def test_mixed_review_without_spoilers_is_rated_as_mixed():
+def test_mixed_review_without_spoilers_is_returned_unchanged():
     text = "The dialogue is clunky and the villain is a cardboard cutout, though the stunts are spectacular."
-    report = analyze_reader_review([text])
-    assert report["review"] == text
-    assert 3 <= report["overall_score"] <= 7
+    assert analyze_reader_review([text])["review"] == text
 
 
 def test_spoiler_free_review_is_returned_unchanged():

@@ -79,7 +79,7 @@ def test_output_guard_blocks_source_copy_without_known_spoiler_keywords():
     report["review"] = original
     result = enforce_reader_output(report, [{"text": original}])
     assert result["reader_output"]["blocked"] is True
-    assert result["overall_score"] is None
+    assert "overall_score" not in result
     assert original not in json.dumps(result)
 
 
@@ -116,7 +116,7 @@ def test_reader_review_preserves_specifics_from_irumudi_without_climax():
     assert review.count("emotional") <= 2
     assert "powerful" in review and "social message" in review
     assert 25 <= len(review.split()) <= 190
-    assert 5 < report["overall_score"] <= 10
+    assert "overall_score" not in report
     for forbidden in ("Guruswamy", "Sai Kumar", "predator", "killer", "murders", "body", "dam", "phone", "voice message", "revenge", "turning point", "grief", "dark turn into"):
         assert forbidden not in review
 
@@ -148,17 +148,16 @@ def test_reader_review_does_not_turn_negated_context_into_praise():
 
     report = analyze_reader_review(["This isn't a gripping commercial drama. There is no heartwarming father-daughter bond. It has no powerful social message."])
     assert "isn't a gripping commercial drama" in report["review"]
-    assert report["overall_score"] < 5
     assert all("not" in item["description"] for item in report["opinion_evidence"])
     assert "warmth" not in report["review"]
     assert "socially conscious edge" not in report["review"]
 
 
-def test_reader_review_does_not_rate_genre_or_emotional_tone_as_praise():
+def test_reader_review_does_not_expose_a_score():
     from pipeline import analyze_reader_review
 
     report = analyze_reader_review(["The film is a rural thriller with an emotionally heavy tone."])
-    assert report["overall_score"] is None
+    assert "overall_score" not in report and "score_basis" not in report
 
 
 def test_reader_review_recognizes_sentence_initial_supporting_credit():
@@ -182,7 +181,6 @@ def test_reader_review_preserves_opinion_inside_spoiler_heavy_paragraph():
     assert review.count("tension") <= 2
     assert "without needing to reveal" not in review
     assert 20 <= len(review.split()) <= 190
-    assert 5 < report["overall_score"] <= 10
     for forbidden in ("Walter", "kingpin", "cancer", "evolution", "not enough", "withheld", "Acting\n"):
         assert forbidden not in review
 
@@ -198,10 +196,8 @@ def test_reader_review_preserves_criticism_and_mixed_feedback():
 
     negative = analyze_reader_review(["The acting is wooden. The writing is weak. The pacing is terrible."])
     mixed = analyze_reader_review(["The acting is excellent but the pacing is terrible."])
-    assert negative["overall_score"] < 4
     assert "acting is wooden" in negative["review"]
     assert "writing is weak" in negative["review"]
-    assert 3 <= mixed["overall_score"] <= 7
     assert "the pacing is terrible" in mixed["review"]
 
 
@@ -234,7 +230,6 @@ def test_redaction_keeps_original_wording_and_removes_twist():
     assert "cold, emotionally crushing climax" in review
     assert report["reader_title"] == "Jailer"
     assert report["reader_output"]["blocked"] is False
-    assert report["overall_score"] > 5
 
 
 @pytest.mark.parametrize("text,details", [
@@ -250,22 +245,20 @@ def test_source_writer_preserves_new_descriptive_vocabulary(text, details):
     assert report["reader_output"]["blocked"] is False
 
 
-def test_reader_review_does_not_score_or_reveal_spoiler_only_text():
+def test_reader_review_does_not_reveal_spoiler_only_text():
     from pipeline import analyze_reader_review
 
     result = analyze_reader_review(["Walter White is a killer. He dies in the final scene."])
-    assert result["overall_score"] is None
     assert "Walter" not in json.dumps(result)
     assert "dies" not in json.dumps(result)
 
 
-def test_reader_score_ignores_duplicates_and_zero_confidence():
+def test_reader_review_ignores_duplicates_and_zero_confidence():
     from pipeline import analyze_reader_review
 
     positive = "The acting is excellent. The writing is sharp."
     single = analyze_reader_review([positive])
     duplicate = analyze_reader_review([positive, positive, {"text": "The acting is awful.", "confidence": 0}])
-    assert single["overall_score"] == duplicate["overall_score"]
     assert single["review"] == duplicate["review"]
 
 
@@ -273,7 +266,6 @@ def test_reader_review_does_not_promote_negated_praise():
     from pipeline import analyze_reader_review
 
     result = analyze_reader_review(["The acting is not excellent. This is not a masterpiece."])
-    assert result["overall_score"] < 5
     assert "exceptional work" not in result["review"]
     assert "Strong performances" not in result["review"]
 

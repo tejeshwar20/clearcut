@@ -29,7 +29,7 @@ def test_api(client):
     assert result.status_code == 200
     assert "acting is excellent" in result.json["review"].lower()
     assert result.json["review"] == result.json["reader_review"]
-    assert 5 < result.json["overall_score"] <= 10
+    assert "overall_score" not in result.json and "score_basis" not in result.json
     assert b"killer" not in result.data
 
 
@@ -42,7 +42,7 @@ def test_pasted_review_endpoint_preserves_qualified_opinion_and_title(client):
     assert "legendary" in result.json["review"]
     assert "career-defining" not in result.json["review"]
     assert "killer" not in result.json["review"]
-    assert 5 < result.json["overall_score"] <= 10
+    assert "overall_score" not in result.json
 
 
 def test_reader_endpoint_rejects_invalid_entities_before_extracting_names(client):
@@ -51,9 +51,10 @@ def test_reader_endpoint_rejects_invalid_entities_before_extracting_names(client
     assert result.status_code == 400
 
 
-def test_home_has_one_overall_score_without_aspect_breakdown(client):
+def test_home_has_no_score_and_no_aspect_breakdown(client):
     html = client.get("/").get_data(as_text=True)
-    assert 'id="overall-score"' in html
+    assert 'id="overall-score"' not in html
+    assert "Overall score" not in html
     assert 'id="aspects"' not in html
     assert 'class="legend"' not in html
     assert 'id="stats"' not in html
@@ -205,8 +206,8 @@ def test_unchecked_cache_is_never_promoted_from_raw_text(client, structured):
     assert response.status_code == 200
     assert original not in response.get_data(as_text=True)
     assert response.json["reader_output"]["checked"] is True
+    assert "overall_score" not in response.json
     if not structured:
-        assert response.json["overall_score"] is None
         assert response.json["reader_output"]["blocked"] is True
 
 

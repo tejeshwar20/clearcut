@@ -35,10 +35,6 @@ function render(data) {
     $('review-text').append(paragraph);
   });
   $('written-review').hidden = !text;
-  const rated = typeof data.overall_score === 'number' && Number.isFinite(data.overall_score);
-  $('overall-score').textContent = rated ? data.overall_score.toFixed(1) : 'Not rated';
-  $('score-scale').hidden = !rated;
-  $('overall-rating').title = data.score_basis || 'Sentiment-based estimate from the supplied opinions.';
 }
 
 function presentReport(data, collection) {

@@ -485,8 +485,6 @@ def add_reader_review(result):
             scored.append({"value": 0.75 * (parts.get("positive", 0) - parts.get("negative", 0)) / subjective, "weight": 1})
     weight = sum(item["weight"] for item in scored)
     value = sum(item["value"] * item["weight"] for item in scored) / weight if weight else None
-    result["overall_score"] = round(min(10, max(0, 5 + 5 * value)), 1) if value is not None else None
-    result["score_basis"] = "Sentiment-based estimate from the supplied opinions, not a verified critic rating."
     contextual_opening = value is not None and value >= 0.35 and "commercial_drama" in by_id
     if "neo_noir" in by_id and value is not None and value >= 0.35:
         opening = title + " is a gripping neo-noir thriller, with a strong sense of style and an absorbing emphasis on mystery."
@@ -507,7 +505,7 @@ def add_reader_review(result):
     elif value is not None:
         opening = title + " offers an uneven experience, with worthwhile qualities offset by noticeable limitations."
     else:
-        opening = "The supplied text does not contain enough clear evaluation for a dependable review or overall score."
+        opening = "The supplied text does not contain enough clear evaluation for a dependable review."
     sentences = [opening]
     used_aspects = set()
     combined = {"precision", "precise_pacing", "tension"} if {"precision", "precise_pacing", "tension"} <= by_id.keys() else set()
@@ -592,7 +590,9 @@ def enforce_reader_output(report, source_reviews=(), approved_phrases=(), allow_
     if blocked:
         text = "A checked spoiler-free review is unavailable for this report. Refresh the source or submit a different set of opinions."
         report["reader_review"] = text
-        report["overall_score"] = None
+    # The product no longer rates reviews; never let a stale cached score reach the page.
+    report.pop("overall_score", None)
+    report.pop("score_basis", None)
     sections = report.get("review_sections", [])
     legacy_unsafe = unsafe(report.get("review", "")) or not isinstance(sections, list) or any(not isinstance(section, dict) or unsafe(section.get("text")) for section in sections)
     if blocked or legacy_unsafe:

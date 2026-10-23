@@ -58,10 +58,9 @@ class MovieReportStore:
                 add_reader_review(report)
             else:
                 report["reader_review"] = ""
-                report["overall_score"] = None
             report["review"] = report["reader_review"]
             report["review_sections"] = []
-        elif "aspects" in report and ("reader_review" not in report or "overall_score" not in report):
+        elif "aspects" in report and "reader_review" not in report:
             add_reader_review(report)
         return enforce_reader_output(report)
 

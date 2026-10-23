@@ -8,7 +8,6 @@ from functools import lru_cache
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 from pipeline import EVENTS, GENRE_CUES, SENTIMENT, TOKEN, enforce_reader_output, infer_review_title, normalize
-from scoring import build_analyzer, estimate_score
 
 
 FEATURES = {
@@ -78,6 +77,8 @@ CHARACTER_FATES = re.compile(
     r"(?<!never )\blets? go\b(?=\s*[.,;!]|\s+of\s+(?:his|her|their|him|the))|"
     r"\b(?:gets?|got|is|was|are|were)\s+(?:shot|killed|murdered|arrested|executed|captured|caught|stabbed|hanged|poisoned|framed|paralysed|paralyzed)\b|"
     r"\bhid(?:es)?\s+(?:it|this|the truth|the secret)\b|"
+    r"\b(?:fak(?:es|ed|ing)|stag(?:es|ed|ing)|fabricat(?:es|ed|ing))\s+(?:her|his|their|its|the)\s+(?:own\s+)?(?:death|disappearance|murder|kidnapping|suicide|accident|crime)\b|"
+    r"\bfram(?:es|ed|ing)\s+(?:\w+\s+){0,2}for\b|"
     r"\bonly\s+(?:the|his|her|their)\s+\w+\s+survives?\b",
     re.I,
 )
@@ -94,7 +95,6 @@ REVIEW_SENTIMENT.lexicon.update({
     "thunderous": 1.2, "venomous": 0.8, "chilling": 1.0, "haunting": 1.5,
     "magnetic": 2.0, "clunky": -1.5, "cardboard": -1.2, "villain": 0, "villains": 0,
 })
-SCORE_ANALYZER = build_analyzer(REVIEW_SENTIMENT.lexicon)
 
 
 @lru_cache(maxsize=1)
@@ -655,16 +655,11 @@ def write_source_review(report, reviews, entities, title):
     if title.islower():
         title = title[:1].upper() + title[1:]
     review = "\n\n".join(" ".join(group) for group in groups.values()) if paragraphs else "The text contains no independently supported, spoiler-safe opinions to turn into a review."
-    # Score only the spoiler-safe text that is shown, plus any rating the reviewer stated.
-    score, score_basis = estimate_score(SCORE_ANALYZER, paragraphs, reviews) if paragraphs else (None, "No clear opinion to score.")
-    value = (score - 5) / 5 if score is not None else None
     report.update(
         reader_title=title, reader_review=review, review=review, review_sections=[],
-        overall_score=score,
-        score_basis=score_basis,
         writer={"provider": "local", "mode": "source_grounded", "status": "ready" if paragraphs else "insufficient_opinion"},
         opinion_evidence=[{key: item[key] for key in ("subject", "description", "text", "review")} for item in selected],
-        overall={"tone": "positive" if value is not None and value > 0.2 else "negative" if value is not None and value < -0.2 else "mixed" if value is not None else "insufficient", "safe_opinion_sentences": len(selected)},
+        overall={"safe_opinion_sentences": len(selected)},
     )
     original = "\n\n".join(re.sub(r"[*_`]", "", review["text"]) for review in cleaned if review.get("confidence", 1) != 0)
     rewritten = model_rewrite(original, passages, entities)
@@ -673,7 +668,6 @@ def write_source_review(report, reviews, entities, title):
         checked = enforce_reader_output(report, allow_vague_references=True)
         if not checked["reader_output"]["blocked"]:
             return checked
-        report.update(overall_score=score)
     if os.environ.get("CLEARCUT_WRITER") == "openai":
         report["writer"] = {"provider": "local", "mode": "source_grounded", "status": "fallback" if paragraphs else "insufficient_opinion"}
     report.update(reader_review=review, review=review)

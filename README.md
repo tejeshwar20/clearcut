@@ -1,7 +1,7 @@
 # ClearCut: Pasted Reviews Without Plot Reveals
 
 A BTech-level English NLP project for movie and TV reviews. Paste a review and
-generate one source-grounded review plus one estimated score out of 10. The page
+generate one source-grounded, spoiler-free review. The page
 has no title search, saved library, import, refresh, or export controls.
 The pasted-review writer uses spaCy's English dependency parser to retain
 evaluative wording while discarding surrounding plot clauses. It does not call
@@ -114,7 +114,7 @@ Limits: 300 reviews; 12,000 characters per review; 120,000 per collection;
 
 ## Output
 
-The result screen shows **one continuous review and one overall score out of 10**.
+The result screen shows **one continuous spoiler-free review** and no score.
 It does not show aspect bars, aspect scores, sentiment tables, sentence counts,
 separate aspect headings, or repetitive spoiler warnings. No search, catalog,
 source disclosure, or import controls are shown.
@@ -127,7 +127,7 @@ This includes possessive credits, "performance by/from" credits, and qualified
 "played ... by" credits. Supported relationship warmth, emotional tone, rural
 setting, genre, and social commentary can also inform the paragraph without copying
 the surrounding plot events or revealing when a genre shift occurs. Genre and tone
-alone are not treated as praise or enough evidence for a numerical score.
+alone are not treated as praise.
 
 The pasted-review writer acts as a spoiler-free review editor. Sentences without
 spoilers are kept exactly as written, and a review with no spoilers is returned
@@ -153,19 +153,16 @@ and optional model output. The browser accepts only the versioned, checked
 `reader_review` field; it never falls back to a legacy `review` or provider section.
 Known disclosure cues and copied runs of ten source words outside internally vetted
 opinion phrases block the candidate,
-remove its score, and replace it with a safe unavailable message. Unsafe legacy
+and replace it with a safe unavailable message. Unsafe legacy
 review fields are removed as well. This is defense in depth, not a guarantee that
 every possible implicit spoiler can be recognized. Stylistic and genre observations
 can survive discarded plot passages without retaining the events themselves.
 
-`overall_score` is a **sentiment-based estimate**, not an IMDb score, a critic average,
-or a calibrated measure of artistic quality. Sentiment of retained opinions
-contributes to the score. Genre labels and descriptive atmosphere do not automatically
-count as praise, zero-confidence input is ignored, and exact duplicate reviews do
-not inflate it. When no evaluative evidence remains, the score is `null` and the UI
-shows Not rated rather than inventing a number.
+The app does not rate reviews. Earlier versions showed an estimated `overall_score`;
+it was removed, and the API now strips `overall_score` and `score_basis` from every
+response, including old cached reports.
 
-For legacy API clients, cached reports gain the reader-facing paragraph and score without a live
+For legacy API clients, cached reports gain the reader-facing paragraph without a live
 source request. Legacy `review_sections`, aspect distributions, and selection metadata
 remain in report JSON for compatibility and inspection, but are not rendered as the
 review interface. Original critical-review passages and the article lead are not
