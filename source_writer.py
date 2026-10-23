@@ -67,9 +67,50 @@ HIDDEN_REVEALS = re.compile(
     r"\b(?:realis|realiz)(?:es|ed|ing)\s+(?:that|the|he|she|they|it|his|her|their|what|who)\b|"
     r"\bwakes? up\s+(?:in|and|to find)\b|"
     r"\b(?:has|had|have|dies of|died of|diagnosed with|battling)\s+(?:a\s+)?(?:terminal\s+)?(?:cancer|tumou?r|illness|disease|amnesia|dementia|alzheimer\w*)\b|"
-    r"\bspoilers?\s*(?:alert|warning)?\s*[:!\u2014-]|\bspoilers? ahead\b",
+    r"(?<!not a )(?<!no )\bspoilers?\s*(?:alert|warning)?\s*[:!\u2014-]|\bspoilers? ahead\b|"
+    # Story-time markers: whatever follows them is an event from late in the plot.
+    r"\bhalfway through\b(?!\s+(?:the|its|it))|\bby the (?:last|final) reel\b|\b(?:after|until|before) the (?:end )?credits\b|"
+    r"\b(?:the|its) (?:last|final|closing) (?:\w+ )?(?:minutes|reel|scene|montage|frame|image|stretch)\b|"
+    r"\bat the (?:very )?end\b(?=\s*,)|\bat the very end\b|\bin the epilogue\b|\bby the (?:end|finale)\b|\bin act (?:two|three|2|3|ii|iii)\b|"
+    # Warnings that a reveal is coming in the same sentence.
+    r"\b(?:i )?won'?t say (?:who|what|how|which)\b|\bwithout giving (?:too much|anything|much|it) away\b|\bbe warned\b|"
+    r"\bnobody warned me\b|\bwhat (?:shocked|surprised|stunned) me (?:is|was) that\b|\b(?:the )?one you (?:would )?least expect\b|"
+    # Reality/identity reveals.
+    r"\bnever (?:actually |really )?existed\b|\b(?:the )?same person\b|\bnever (?:really |actually )?\w+ but\b|"
+    r"\b(?:realis|realiz)(?:e|es|ed|ing)\s+(?:that|they|he|she|it|we)\b|\b(?:swap|switch)(?:ped|s)? places\b|\breplaced by\b|"
+    r"\binvented (?:him|her|them|it)\b|\b(?:is|was|still|found|shown|shows \w+(?: \w+)?)\s+alive\b",
     re.I,
 )
+# Words in reviews that look like plot events but are figures of speech or meta-comments.
+FIGURATIVE = re.compile(
+    r"\b(?:killed|kills|slayed|destroyed) me\b|\b(?:dying|died|die|dies) (?:of|with|from) laughter\b|\b(?:died|dying|dies) laughing\b|"
+    r"\b(?:film|movie|story|plot|pacing|momentum|show|series|script|energy|it)?\s*(?:dies|died|dying) a (?:slow|quick|painful|long|sudden) death\b|"
+    r"\b(?:film|movie|story|plot|pacing|momentum|show|series|script|energy|it)\s+(?:dies|died|dying)\b|"
+    r"\bkiller (?:jokes?|soundtrack|score|lines?|cast|performance|app|look|visuals?|one-liners?|beats?|hooks?)\b|"
+    r"\b(?:jokes?|gags?|punchlines?|one-liners?|lines?|songs?|beats?)\s+kill\b|\bto death\b(?=[^.]{0,30}\b(?:and|but|,)\b)|\b(?:scared|bored|loved|laughed) me to death\b|"
+    r"\btwists? (?:on|across|through|around)\b|\btwists and turns\b|\bspins and twists\b|"
+    r"\b(?:not|won'?t|will not|never|don'?t|do not|refuse to)\s+(?:\w+\s+)?spoil\b|\bnot a spoiler\b|\bno spoilers?\b",
+    re.I,
+)
+# Content-free references to plot structure ("the ending is rushed", "a big reveal I loved").
+REFERENCE_LEMMAS = {"ending", "end", "finale", "climax", "act", "twist", "reveal", "revelation", "surprise", "conclusion"}
+# Adjectives that state a plot fact rather than an opinion ("the vaccine was fake").
+FACTUAL = {
+    "fake", "real", "dead", "alive", "missing", "guilty", "innocent", "alone", "pregnant", "lost",
+    "free", "own", "false", "true", "sick", "ill", "blind", "deaf", "broke", "rich", "poor", "safe",
+}
+# Plot outcomes: being fired, losing a title, floods, sabotage and similar irreversible events.
+EVENT_OUTCOMES = re.compile(
+    r"\b(?:is|was|gets?|got|being)\s+fired\b|\bquits?\b(?!\s+(?:while|before|early|too))|\bresigns?\b|"
+    r"\b(?:loses?|lost|wins?|won)\s+(?:the\s+)?(?:championship|final|war|battle|election|case|title|trial|match|tournament|race|cup)\b|"
+    r"\bsabotag\w*|\bcollapses?\b|\bscuttl\w*|\bflooded\b|\bswept away\b|\bsurrender\w*|\bconfess\w*|\bleak(?:s|ed|ing)?\b(?!\s+(?:out|through))|"
+    r"\bspared?\b|\badopted by\b|\breunit\w*|\bdoes(?:n't| not) come (?:home|back)\b|\bdid(?:n't| not) come (?:home|back)\b|"
+    r"\bonly\s+(?:one|two|three|four|five|a few|\d+)\s+of\s+the\b|\bmake it (?:onto|out|home|back|off)\b|\bwalks? into the sea\b|"
+    r"\bhands? (?:over )?the (?:crown|throne|kingdom|company|key)\b|\bscatters? (?:his|her|their) ashes\b",
+    re.I,
+)
+TEASER = re.compile(r"^\W*(?:and|but|so)?\s*(?:here'?s\s+)?(?:the|a|my)?\s*(?:big|real|final|actual|main)?\s*(?:twist|reveal|kicker|catch|surprise|spoiler|ending|punchline)\s*[?:!.\u2014-]+\s*$", re.I)
+CONTINUATION = re.compile(r"^\W*(?:this|that|which|it)\s+(?:explains|means|implies|recontextuali[sz]es|changes|reframes|makes sense|is why)\b", re.I)
 # What happens to a character. Only the clause that contains it is removed.
 CHARACTER_FATES = re.compile(
     r"\b(?:does|did|do)(?:n't| not)\s+(?:make it(?=\s*(?:[.,;!]|and\b|out\b|alive\b|home\b|through\b|back\b))|survive|come back|return|wake up|recover)\b|"
@@ -159,7 +200,10 @@ def inferred_title(doc):
 
 def cue_spans(text, entities):
     exempt = [match.span() for match in GENRE_CUES.finditer(text)]
-    patterns = [(REVEALS, True), (HIDDEN_REVEALS, True), (EVENTS, False), (DISCLOSURES, False), (OUTCOMES, False), (CHARACTER_FATES, False)]
+    exempt += [match.span() for match in FIGURATIVE.finditer(text)]
+    # "a film about loss and grief" names a theme, not an event.
+    exempt += [match.span() for match in re.finditer(r"\b(?:about|explores?|exploring|portrait of|meditation on|study of)\s+(?:[\w-]+(?:,|\s+and)?\s+){0,4}", text, re.I)]
+    patterns = [(REVEALS, True), (HIDDEN_REVEALS, True), (EVENTS, False), (DISCLOSURES, False), (OUTCOMES, False), (CHARACTER_FATES, False), (EVENT_OUTCOMES, False)]
     patterns += [(re.compile(r"(?<!\w)" + re.escape(entity) + r"(?!\w)", re.I), False) for entity in entities]
     spans = []
     for pattern, severe in patterns:
@@ -170,6 +214,56 @@ def cue_spans(text, entities):
                 continue
             spans.append((match.start(), match.end(), severe))
     return spans
+
+
+def has_opinion(tokens):
+    for token in tokens:
+        lower = token.lower_
+        if token.lemma_.lower() in FEATURES or lower in {"i", "me", "my", "we", "us", "our", "you", "your"}:
+            return True
+        if token.pos_ in {"ADJ", "ADV"} and lower not in FACTUAL and abs(REVIEW_SENTIMENT.lexicon.get(lower, 0)) >= 1:
+            return True
+    return False
+
+
+def reference_only(sentence, start, end):
+    """True when a cue like "the ending" or "a big reveal" is mentioned without saying what happens."""
+    span = sentence.char_span(start, end, alignment_mode="expand")
+    if span is None:
+        return False
+    nouns = [token for token in span if token.lemma_.lower() in REFERENCE_LEMMAS and token.pos_ == "NOUN"]
+    if not nouns:
+        # "at the end" attached to such a noun ("a big reveal at the end").
+        anchor = span.root.head if span.root.dep_ == "pobj" else span.root
+        anchor = anchor.head if anchor.dep_ == "prep" else anchor
+        if span.root.lemma_.lower() == "end" and anchor.lemma_.lower() in REFERENCE_LEMMAS:
+            nouns = [anchor]
+        else:
+            return False
+    for noun in nouns:
+        for child in noun.children:
+            # "the twist that the butler did it", "the reveal of who ..." describe the plot.
+            if child.dep_ in {"acl", "ccomp", "appos"}:
+                return False
+            if child.dep_ == "relcl" and not any(part.lower_ in {"i", "we", "you"} for part in child.subtree):
+                return False
+            if child.dep_ == "prep" and child.lower_ in {"of", "where", "when", "about", "involving", "with"}:
+                return False
+        head = noun.head
+        # "The finale is thrilling" (parsed as a progressive verb) is an evaluation.
+        evaluative_head = head.tag_ in {"VBG", "JJ"} and abs(REVIEW_SENTIMENT.lexicon.get(head.lower_, 0)) >= 1
+        if noun.dep_ in {"nsubj", "nsubjpass"} and not evaluative_head and head.lemma_ not in {"be", "feel", "seem", "land", "work", "fall", "come", "drag", "stay", "remain", "linger", "hit", "deliver", "satisfy", "disappoint"}:
+            return False
+        if noun.dep_ in {"dobj", "pobj"} and head.lemma_ not in {"spoil", "reveal", "ruin", "love", "like", "hate", "enjoy", "see", "guess", "predict", "expect", "at", "about", "for", "to"}:
+            return False
+        # "At/by the finale, X happens": the cue sets the time of a plot event.
+        if noun.dep_ == "pobj" and head.lemma_ in {"at", "by", "in", "during"} and head.head.pos_ in {"VERB", "AUX"} and head.head.dep_ == "ROOT" and not any(part.lower_ in {"i", "we", "you"} for part in head.head.subtree):
+            return False
+        if noun.dep_ == "nsubj" and head.lemma_ == "be":
+            attrs = [child for child in head.children if child.dep_ in {"attr", "acomp"}]
+            if any(attr.pos_ in {"NOUN", "PROPN", "PRON"} and attr.lemma_.lower() not in {"highlight", "mess", "letdown", "disappointment", "masterstroke", "triumph", "joy"} for attr in attrs):
+                return False
+    return True
 
 
 def clause_unit(token):
@@ -212,6 +306,9 @@ def salvage_opening(sentence, entities):
 def redact_sentence(sentence, entities):
     """Return the sentence without spoiler clauses, or "" when it cannot be kept."""
     spans = cue_spans(sentence.text, entities)
+    # Mentions like "the ending is rushed" or "a big reveal I loved" say nothing about what happens.
+    if spans and all(reference_only(sentence, start, end) for start, end, _ in spans):
+        spans = []
     # Sentences with no spoiler cue are kept exactly as the reviewer wrote them.
     if not spans and not any(token.lower_ in HINTS and token.dep_ == "advmod" for token in sentence):
         text = sentence.text.strip()
@@ -251,6 +348,10 @@ def redact_sentence(sentence, entities):
     if root.i in removed or any(child.i in removed for child in root.children if child.dep_ in {"nsubj", "nsubjpass"}):
         return ""
     # A first-person reaction stripped of its cause reads incomplete; let rephrase_spoiler restore a vague cause.
+    # Half-cleaned plot sentences ("the captain scuttles his own vessel") still give the story away:
+    # only keep a partially redacted sentence when what is left is the reviewer's opinion.
+    if removed and not has_opinion([token for token in sentence if token.i not in removed]):
+        return ""
     if removed and root.lemma_.lower() in REACTIONS and any(child.lower_ in {"i", "we"} for child in root.children if child.dep_ in {"nsubj", "nsubjpass"}):
         return ""
     parts = []
@@ -362,7 +463,8 @@ def join_words(words):
 
 
 def appraisal_word(token):
-    if not (token.lower_ in INTENSITY or REVIEW_SENTIMENT.lexicon.get(token.lower_, 0)):
+    # Factual adjectives ("fake", "dead", "alive") describe the plot, not the reviewer's opinion.
+    if token.lower_ in FACTUAL or not (token.lower_ in INTENSITY or REVIEW_SENTIMENT.lexicon.get(token.lower_, 0)):
         return ""
     adverbs = [child for child in token.children if child.dep_ == "advmod" and child.lower_ not in WEAK_ADVERBS and child.i < token.i]
     return " ".join(part.text for part in adverbs + [token])
@@ -450,9 +552,19 @@ def extract_opinions(reviews, entities):
         if confidence == 0:
             continue
         titles.append(inferred_title(doc))
+        previous_spoiler = False
+        teaser_pending = False
         for sentence in doc.sents:
             current[0] = (review_index, sentence.start)
+            if TEASER.match(sentence.text):
+                # "The twist?" introduces a spoiler: drop it and treat the next sentence as one.
+                teaser_pending = True
+                continue
             kept = redact_sentence(sentence, entities)
+            if kept and (teaser_pending or (previous_spoiler and CONTINUATION.match(sentence.text))):
+                kept = ""
+            teaser_pending = False
+            previous_spoiler = not kept or kept.strip() != sentence.text.strip()
             rephrased = ("", False) if kept else rephrase_spoiler(sentence, entities)
             passages.append({"key": current[0], "source": sentence.text, "text": kept or salvage_opening(sentence, entities), "withheld": not kept, "rephrased": rephrased[0], "evaluative": rephrased[1]})
             for token in sentence:

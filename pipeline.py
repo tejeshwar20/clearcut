@@ -42,6 +42,23 @@ GENRE_CUES = re.compile(
     r"\b(?:revenge|murder|crime|heist|kidnap\w*|vigilante|serial[- ]killer|survival|spy|war|death|escape)"
     r"[- ](?:thrillers?|dramas?|myster(?:y|ies)|sagas?|films?|movies?|stories|story|tales?|genre|comed(?:y|ies)|epics?|flicks?|procedurals?|noirs?)\b", re.I,
 )
+# Figures of speech and meta-comments that contain event words but reveal nothing.
+FIGURATIVE_EVENTS = re.compile(
+    r"\b(?:killed|kills|slayed|destroyed) me\b|\b(?:dying|died|die|dies) (?:of|with|from) laughter\b|\b(?:died|dying|dies) laughing\b|"
+    r"\b(?:film|movie|story|plot|pacing|momentum|show|series|script|energy|it)?\s*(?:dies|died|dying) a (?:slow|quick|painful|long|sudden) death\b|"
+    r"\b(?:film|movie|story|plot|pacing|momentum|show|series|script|energy|it)\s+(?:dies|died|dying)\b|"
+    r"\bkiller (?:jokes?|soundtrack|score|lines?|cast|performance|look|visuals?|one-liners?|beats?|hooks?)\b|"
+    r"\b(?:jokes?|gags?|punchlines?|one-liners?|lines?|songs?|beats?)\s+kill\b|\b(?:scared|bored|loved|laughed) me to death\b|"
+    r"\btwists? (?:on|across|through|around)\b|\btwists and turns\b|\bspins and twists\b|"
+    r"\b(?:not|won'?t|will not|never|don'?t|do not|refuse to)\s+(?:\w+\s+)?spoil\w*\b|\bnot a spoiler\b|\bno spoilers?\b|"
+    r"\bmurder mystery\b|\bghost story\b|\bdream sequences?\b|"
+    # Content-free references: "a big reveal at the end that I loved", "the twist I didn't see coming".
+    r"\b(?:a|an|the)\s+(?:[\w-]+\s+){0,2}(?:twist|reveal|revelation)\s+(?:at the end\s+)?(?:that|which)\s+(?:i|we)\b|"
+    # Evaluating a twist without describing it: "the twist is clever", "the twist feels earned".
+    r"\b(?:the|its|a|an)\s+(?:[\w-]+\s+)?(?:twist|reveal|revelation)\s+(?:is|was|feels|felt|lands|landed|works|worked)\s+(?:a bit\s+|very\s+|so\s+|genuinely\s+|really\s+|too\s+)?"
+    r"(?:clever|smart|brilliant|earned|predictable|lazy|obvious|silly|effective|shocking|satisfying|well[- ]earned|great|good|bad|weak|strong|ingenious|unexpected|cheap|contrived)\b",
+    re.I,
+)
 TOKEN = re.compile(r"[A-Za-z]+(?:'[A-Za-z]+)?")
 SPLIT = re.compile(r"\s+(?:but|however|whereas|although|yet)\s+|[;,]+", re.I)
 SENTIMENT = SentimentIntensityAnalyzer()
@@ -571,6 +588,7 @@ def enforce_reader_output(report, source_reviews=(), approved_phrases=(), allow_
             screened = screened[len(title):]
         screened = re.sub(r"\bspoiler[- ](?:safe|free)\b", "", screened, flags=re.I)
         screened = GENRE_CUES.sub("", screened)
+        screened = FIGURATIVE_EVENTS.sub("", screened)
         if allow_vague_references:
             # "The final reveal surprised me" names no event; "reveals that X ..." still fails.
             screened = re.sub(r"\b(?:the|a|an|its|this|that)\s+(?:[\w-]+\s+){0,2}(?:twists?|reveal|revelation)\b(?!\s+(?:that|of|is|was)\b)", "", screened, flags=re.I)
