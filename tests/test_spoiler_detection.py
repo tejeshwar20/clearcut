@@ -57,6 +57,24 @@ def test_non_spoiler_sentences_are_kept_word_for_word(text):
     assert review(text) == text
 
 
+def test_spoiler_placeholders_are_varied_and_never_repeated():
+    text = ("Great acting. Rosebud turns out to be his childhood sled. The music is lovely. "
+            "Jack doesn't make it and freezes in the water. The editing is sharp. "
+            "The killer is the narrator himself. Wonderful film.")
+    output = review(text)
+    for kept in ("Great acting.", "The music is lovely.", "The editing is sharp.", "Wonderful film."):
+        assert kept in output
+    sentences = [part.strip() for part in output.split(".") if part.strip()]
+    assert len(sentences) == len(set(sentences))
+    assert "significant turn" not in output and "surprise in store" not in output
+
+
+def test_consecutive_spoilers_become_one_line():
+    output = review("Strong performances throughout. Dumbledore is killed by Snape on the tower. Harry escapes with Hagrid. The visuals are stunning.")
+    assert output.startswith("Strong performances throughout.") and output.endswith("The visuals are stunning.")
+    assert output.count(".") == 3
+
+
 def test_craft_praise_is_not_moved_onto_the_plot():
     output = review("The visual effects are stunning, but I hated that the main character dies at the end.")
     assert output.startswith("The visual effects are stunning")

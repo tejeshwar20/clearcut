@@ -290,7 +290,7 @@ def moment_phrase(sentence):
         return "the finale"
     if re.search(r"\b(?:final|third|last) act\b", text):
         return "the final act"
-    if re.search(r"\bending\b|\bends? (?:with|on|in|when|as)\b|\bended (?:with|on|in)\b|\b(?:final|last) (?:scene|moments?|shot|frame)\b", text):
+    if re.search(r"\bending\b|\bends? (?:with|on|in|when|as)\b|\bended (?:with|on|in)\b|\b(?:final|last) (?:scene|moments?|shot|frame|minutes)\b|\b(?:in|by|at) the (?:very )?end\b", text):
         return "the ending"
     if re.search(r"\b(?:twist|reveal\w*|revelation|turns? out|is actually|was actually|all along|real identity|true nature|unmask\w*|discover\w*|uncover\w*|finds? out|learns? that)\b", text):
         return "the final surprise" if re.search(r"\b(?:final|last|ultimate)\b", text) else "the big surprise"
@@ -346,7 +346,7 @@ def reaction_clause(sentence, entities, moment):
                     words.append(moment + " ")
             return tidy("".join(words))
         if subject is None and token.dep_ in {"conj", "advcl", "parataxis"} and (imperative or emotional or personal):
-            lead = "The story takes an emotional turn" if emotional else "The story takes a significant turn"
+            lead = "The story takes an emotional turn" if emotional else "The story takes an unexpected turn"
             before = sentence.doc[max(sentence.start, token.left_edge.i - 2):token.left_edge.i]
             joiner = ", so " if any(part.lower_ == "so" for part in list(before) + [part for part in clause if part.i < token.i]) else ", "
             rest = "".join(part.text_with_ws for part in clause if part.i not in connectors and part.lower_ != "so").strip()
@@ -410,13 +410,76 @@ def rephrase_spoiler(sentence, entities):
         if "surprise" in moment:
             return tidy(moment + " is " + join_words(words)), True
         return tidy(moment + " takes a " + join_words(words) + " turn"), True
-    neutral = {
-        "the climax": "The climax brings the story's conflicts to a head",
-        "the finale": "The finale brings the story's conflicts to a head",
-        "the final act": "The final act takes the story in a new direction",
-        "the ending": "The ending brings the story to a decisive close",
-    }
-    return tidy(neutral.get(moment, "The story has a surprise in store" if "surprise" in moment else "The story takes a significant turn")), False
+    return FALLBACK_MARKER + spoiler_kind(sentence, moment), False
+
+
+# Placeholder for a spoiler sentence with no reviewer opinion to keep. write_source_review swaps it
+# for a varied, natural line so a review never repeats the same filler.
+FALLBACK_MARKER = "\x00fallback:"
+FALLBACK_LINES = {
+    "ending": [
+        "The ending is best experienced without knowing what's coming.",
+        "How it all wraps up is worth discovering for yourself.",
+        "The final stretch is best left unspoiled.",
+    ],
+    "climax": [
+        "The climax is best experienced fresh.",
+        "Everything builds to a payoff worth going in blind for.",
+        "The big finish is one to see for yourself.",
+    ],
+    "twist": [
+        "There's a surprise here that's best left unspoiled.",
+        "One turn in the story is better discovered first-hand.",
+        "The film holds back a surprise worth going in blind for.",
+    ],
+    "fate": [
+        "Where the characters end up is best seen for yourself.",
+        "The story doesn't pull its punches, and the details are worth discovering on screen.",
+        "Some character moments land harder if you don't know them in advance.",
+    ],
+    "plot": [
+        "Key plot details are left out here to keep the experience fresh.",
+        "The story has developments that are best discovered on screen.",
+        "Some plot points are better seen than read about.",
+    ],
+}
+
+
+def spoiler_kind(sentence, moment):
+    text = sentence.text
+    if moment in {"the ending", "the final act"}:
+        return "ending"
+    if moment in {"the climax", "the finale"}:
+        return "climax"
+    if "surprise" in moment or HIDDEN_REVEALS.search(text) or REVEALS.search(text):
+        return "twist"
+    if CHARACTER_FATES.search(text) or OUTCOMES.search(text) or re.search(r"\b(?:dies?|died|death|killed|kills?|survives?|murder\w*)\b", text, re.I):
+        return "fate"
+    return "plot"
+
+
+def fill_fallbacks(texts, used=None):
+    """Replace fallback markers with varied lines; merge consecutive ones and never repeat a line.
+
+    Reviews that only lose plot details get at most one short note per run of spoilers, and each
+    note in the review is different."""
+    used = set() if used is None else used
+    result, previous_fallback = [], False
+    for text in texts:
+        if not text.startswith(FALLBACK_MARKER):
+            result.append(text)
+            previous_fallback = False
+            continue
+        if previous_fallback:
+            continue
+        kind = text[len(FALLBACK_MARKER):]
+        options = FALLBACK_LINES.get(kind, []) + FALLBACK_LINES["plot"]
+        line = next((option for option in options if option not in used), None)
+        if line:
+            used.add(line)
+            result.append(line)
+        previous_fallback = True
+    return result
 
 
 def extract_opinions(reviews, entities):
@@ -568,18 +631,25 @@ def write_source_review(report, reviews, entities, title):
         original_kept |= bool(candidates)
         if passage["withheld"]:
             # Rewrite rather than delete, but avoid stacking content-free vague sentences.
-            if passage["rephrased"] and (passage["evaluative"] or not (candidates or previous_rephrased)):
+            if passage["rephrased"] and (passage["evaluative"] or not candidates):
                 candidates.append(passage["rephrased"])
             if not passage["text"]:
                 candidates += [item["text"] for item in selected if item["sentence"] == passage["key"]]
         previous_rephrased = passage["withheld"]
         for text in candidates:
-            if text.casefold() not in seen and sum(len(part) for part in paragraphs) + len(text) < 5500:
-                seen.add(text.casefold())
+            marker = text.startswith(FALLBACK_MARKER)
+            if (marker or text.casefold() not in seen) and sum(len(part) for part in paragraphs) + len(text) < 5500:
+                if not marker:
+                    seen.add(text.casefold())
                 paragraphs.append(text)
                 groups.setdefault(passage["key"][0], []).append(text)
     if not original_kept and not any(passage["evaluative"] for passage in passages):
         paragraphs, groups = [], {}
+    # Turn fallback markers into varied, non-repeating lines across the whole review.
+    used = set()
+    groups = {key: fill_fallbacks(group, used) for key, group in groups.items()}
+    groups = {key: group for key, group in groups.items() if group}
+    paragraphs = [text for group in groups.values() for text in group]
     cleaned = [{**review, "text": re.sub(r"\*{4,}", "***", clean_markup(review["text"]))} for review in reviews]
     title = title or infer_review_title(cleaned) or detected_title
     if title.islower():
