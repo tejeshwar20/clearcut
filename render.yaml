@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: clearcut
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: CLEARCUT_WRITER
+        value: local
+      - key: CLEARCUT_REPORT_DB
+        value: /tmp/clearcut.sqlite3
