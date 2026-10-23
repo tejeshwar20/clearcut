@@ -8,6 +8,7 @@ from functools import lru_cache
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 from pipeline import EVENTS, GENRE_CUES, SENTIMENT, TOKEN, enforce_reader_output, infer_review_title, normalize
+from scoring import build_analyzer, estimate_score
 
 
 FEATURES = {
@@ -65,6 +66,7 @@ REVIEW_SENTIMENT.lexicon.update({
     "thunderous": 1.2, "venomous": 0.8, "chilling": 1.0, "haunting": 1.5,
     "magnetic": 2.0, "clunky": -1.5, "cardboard": -1.2, "villain": 0, "villains": 0,
 })
+SCORE_ANALYZER = build_analyzer(REVIEW_SENTIMENT.lexicon)
 
 
 @lru_cache(maxsize=1)
@@ -483,18 +485,13 @@ def write_source_review(report, reviews, entities, title):
     if title.islower():
         title = title[:1].upper() + title[1:]
     review = "\n\n".join(" ".join(group) for group in groups.values()) if paragraphs else "The text contains no independently supported, spoiler-safe opinions to turn into a review."
-    subjective = [item for item in selected if abs(item["score"]) >= 0.05]
-    weight = sum(item["weight"] for item in subjective)
-    value = sum(item["score"] * item["weight"] for item in subjective) / weight if weight else None
-    if value is None and paragraphs:
-        genre_pattern = r"\b(?:" + "|".join(sorted(GENRES - {"masterpiece", "achievement"})) + r")\b"
-        scores = [REVIEW_SENTIMENT.polarity_scores(re.sub(genre_pattern, "", text, flags=re.I)) for text in paragraphs]
-        scores = [score["compound"] for score in scores if score["pos"] or score["neg"]]
-        value = sum(scores) / len(scores) if scores else None
+    # Score only the spoiler-safe text that is shown, plus any rating the reviewer stated.
+    score, score_basis = estimate_score(SCORE_ANALYZER, paragraphs, reviews) if paragraphs else (None, "No clear opinion to score.")
+    value = (score - 5) / 5 if score is not None else None
     report.update(
         reader_title=title, reader_review=review, review=review, review_sections=[],
-        overall_score=round(5 + 5 * value, 1) if value is not None else None,
-        score_basis="Sentiment-based estimate from retained opinions, not a verified critic rating.",
+        overall_score=score,
+        score_basis=score_basis,
         writer={"provider": "local", "mode": "source_grounded", "status": "ready" if paragraphs else "insufficient_opinion"},
         opinion_evidence=[{key: item[key] for key in ("subject", "description", "text", "review")} for item in selected],
         overall={"tone": "positive" if value is not None and value > 0.2 else "negative" if value is not None and value < -0.2 else "mixed" if value is not None else "insufficient", "safe_opinion_sentences": len(selected)},
@@ -506,7 +503,7 @@ def write_source_review(report, reviews, entities, title):
         checked = enforce_reader_output(report, allow_vague_references=True)
         if not checked["reader_output"]["blocked"]:
             return checked
-        report.update(overall_score=round(5 + 5 * value, 1) if value is not None else None)
+        report.update(overall_score=score)
     if os.environ.get("CLEARCUT_WRITER") == "openai":
         report["writer"] = {"provider": "local", "mode": "source_grounded", "status": "fallback" if paragraphs else "insufficient_opinion"}
     report.update(reader_review=review, review=review)
