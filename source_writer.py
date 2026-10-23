@@ -49,7 +49,7 @@ OUTCOMES = re.compile(
     r"poison\w*|strangl\w*|behead\w*|bloodbath|massacre\w*|lobotom\w*|inherit\w*|vanish\w*|"
     r"gives? (?:his|her|their) life|bur(?:y|ies|ied) (?:the|his|her|their)|"
     r"grief|griev\w*|mourn\w*|kidnap\w*|abduct\w*|hostage|corpse|funeral|"
-    r"(?:shift\w*|evolution|evolv\w*|transform\w*|devolv\w*|descent)\b[^.;]{0,60}?\b(?:into|to)|"
+    r"(?:shift\w*|evolution|evolv\w*|transform\w*|devolv\w*|descent)\b[^.;]{0,60}?\b(?:into|to\s+(?:become|be|a|an|the)\b)|"
     r"(?:turns?|turned|turning)(?:\s+\w+){0,2}\s+into|"
     r"(?:dark|shocking|sharp|sudden|unexpected|tragic|violent|brutal)\s*,?\s*(?:\w+\s+)?turn)\b", re.I,
 )
@@ -64,7 +64,6 @@ HIDDEN_REVEALS = re.compile(
     r"dream(?!\s+(?:to|come|cast|team|of a))|imaginary|imagined)\b|"
     r"\b(?:was|were|is|all)\s+(?:just\s+|only\s+|happening\s+)?(?:in|inside)\s+(?:his|her|their)\s+(?:head|mind|imagination)\b|"
     r"\bbehind (?:it all|everything|the (?:murders?|killings?|attacks?|crimes?))\b|"
-    r"\b(?:realis|realiz)(?:es|ed|ing)\s+(?:that|the|he|she|they|it|his|her|their|what|who)\b|"
     r"\bwakes? up\s+(?:in|and|to find)\b|"
     r"\b(?:has|had|have|dies of|died of|diagnosed with|battling)\s+(?:a\s+)?(?:terminal\s+)?(?:cancer|tumou?r|illness|disease|amnesia|dementia|alzheimer\w*)\b|"
     r"\bspoilers?\s*(?:alert|warning)?\s*[:!\u2014-]|\bspoilers? ahead\b",
@@ -386,7 +385,8 @@ def rephrase_spoiler(sentence, entities):
     words = [word for word in (appraisal_word(token) for token in sorted(set(predicates), key=lambda token: token.i)) if word]
     # Praise for a craft feature ("the visual effects are stunning") must not be moved onto the plot.
     craft_subject = any(part.lemma_.lower() in FEATURES for subject in subjects for part in subject.subtree)
-    if words and root.lemma_ == "be" and not craft_subject:
+    factual_description = any(EVENTS.search(word) or OUTCOMES.search(word) for word in words)
+    if words and root.lemma_ == "be" and not craft_subject and not factual_description:
         return tidy(moment + " is " + join_words(words)), True
     for token in sentence:
         if token.lemma_.lower() in {"climax", "finale", "ending", "conclusion"}:

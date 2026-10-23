@@ -79,3 +79,22 @@ def test_craft_praise_is_not_moved_onto_the_plot():
     output = review("The visual effects are stunning, but I hated that the main character dies at the end.")
     assert output.startswith("The visual effects are stunning")
     assert "turn in the story is stunning" not in output
+
+
+def test_devara_plot_summary_keeps_setup_and_does_not_block_on_death_rewrite():
+    text = ("Devara: Part 1 (2024) The Setup: Set against the backdrop of coastal lands in the 1980s and 90s, "
+            "Devara (Jr. NTR) is a fearless man living in a village whose people rely on smuggling via the sea to make a living. "
+            "When Devara realizes that their illegal trade is bringing blood, destruction, and a bad omen to their lives, "
+            "he undergoes a moral transformation and turns against the smuggling rings, vowing to protect the sea rather than exploit it. "
+            "This puts him at direct odds with his fierce rival, Bhaira (Saif Ali Khan), who wants to continue the lucrative criminal enterprise. "
+            "The Major Twist: For years, the villagers live in absolute fear, believing that Devara is still out there patrolling the dark waters "
+            "as an invincible, watchful myth keeping everyone in line. However, the film's massive climax completely shatters this illusion: "
+            "Devara is actually dead, and he didn't die fighting Bhaira's men; he was killed by his own timid, cowardly son, Vara. "
+            "The Climax & Ending: It is revealed that for over a decade, it wasn't the legendary father maintaining the terror and keeping the sea safe, "
+            "but rather his son Vara who secretly assumed his father's identity and persona after fatally turning on him. "
+            "The film ends on this stunning moral ambiguity, leaving the exact reason why Vara killed his own righteous father as a massive hook for Part 2.")
+    output = review(text)
+    assert "When Devara realizes that their illegal trade is bringing blood, destruction, and a bad omen to their lives" in output
+    assert "This puts him at direct odds with his fierce rival, Bhaira (Saif Ali Khan)" in output
+    for spoiler in ("actually dead", "was killed", "timid, cowardly son", "assumed his father's identity", "exact reason why Vara killed"):
+        assert spoiler not in output
