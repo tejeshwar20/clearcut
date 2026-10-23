@@ -570,7 +570,6 @@ def enforce_reader_output(report, source_reviews=(), approved_phrases=(), allow_
         screened = re.sub(r"\bspoiler[- ](?:safe|free)\b", "", screened, flags=re.I)
         screened = GENRE_CUES.sub("", screened)
         if allow_vague_references:
-            # "The final reveal surprised me" names no event; "reveals that X ..." still fails.
             screened = re.sub(r"\b(?:the|a|an|its|this|that)\s+(?:[\w-]+\s+){0,2}(?:twists?|reveal|revelation)\b(?!\s+(?:that|of|is|was)\b)", "", screened, flags=re.I)
         return bool(EVENTS.search(screened) or extra_events.search(screened))
 
@@ -590,7 +589,6 @@ def enforce_reader_output(report, source_reviews=(), approved_phrases=(), allow_
     if blocked:
         text = "A checked spoiler-free review is unavailable for this report. Refresh the source or submit a different set of opinions."
         report["reader_review"] = text
-    # The product no longer rates reviews; never let a stale cached score reach the page.
     report.pop("overall_score", None)
     report.pop("score_basis", None)
     sections = report.get("review_sections", [])

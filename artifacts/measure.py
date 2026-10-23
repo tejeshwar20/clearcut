@@ -89,7 +89,6 @@ for sentence in SAFE:
         changed_safe += 1
         changed_examples.append((sentence, out))
 
-# Mixed reviews: harmless sentences around a spoiler must be untouched.
 mixed_total, mixed_intact = 0, 0
 for sentence, _ in SPOILERS[:12]:
     for safe in SAFE[:4]:

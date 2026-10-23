@@ -34,7 +34,6 @@ DISCLOSURES = re.compile(
     r"retaliation|culprit|perpetrator|blood[- ]soaked|shot|"
     r"final words|voice message|real identity)\b", re.I,
 )
-# Twist/ending language: any sentence containing it is withheld entirely.
 REVEALS = re.compile(
     r"\b(?:reveal\w*|revelation|twists?|turns? out|is actually|was actually|true nature|"
     r"real identity|betray\w*|climax\w*|finale|final act|third act|ending|culminat\w*|"
@@ -52,8 +51,6 @@ OUTCOMES = re.compile(
     r"(?:turns?|turned|turning)(?:\s+\w+){0,2}\s+into|"
     r"(?:dark|shocking|sharp|sudden|unexpected|tragic|violent|brutal)\s*,?\s*(?:\w+\s+)?turn)\b", re.I,
 )
-# Reveal-style spoilers that the keyword lists miss: identity/family reveals, "it was all a dream",
-# hidden-all-along twists and explicit spoiler markers. Any sentence containing one is withheld.
 HIDDEN_REVEALS = re.compile(
     r"\b(?:is|was|are|were)\s+(?:actually\s+|really\s+|secretly\s+|in fact\s+)?(?:[A-Z]\w+'s|his|her|their)\s+"
     r"(?:real\s+|biological\s+|long-lost\s+|twin\s+)?(?:father|mother|dad|mom|mum|son|daughter|brother|sister|twin|parent|wife|husband|child)\b(?!')|"
@@ -68,7 +65,6 @@ HIDDEN_REVEALS = re.compile(
     r"\bspoilers?\s*(?:alert|warning)?\s*[:!\u2014-]|\bspoilers? ahead\b",
     re.I,
 )
-# What happens to a character. Only the clause that contains it is removed.
 CHARACTER_FATES = re.compile(
     r"\b(?:does|did|do)(?:n't| not)\s+(?:make it(?=\s*(?:[.,;!]|and\b|out\b|alive\b|home\b|through\b|back\b))|survive|come back|return|wake up|recover)\b|"
     r"\bnever\s+(?:walks|wakes|returns|comes back|recovers|sees (?:him|her|them)|speaks)\b|"
@@ -211,7 +207,6 @@ def salvage_opening(sentence, entities):
 def redact_sentence(sentence, entities):
     """Return the sentence without spoiler clauses, or "" when it cannot be kept."""
     spans = cue_spans(sentence.text, entities)
-    # Sentences with no spoiler cue are kept exactly as the reviewer wrote them.
     if not spans and not any(token.lower_ in HINTS and token.dep_ == "advmod" for token in sentence):
         text = sentence.text.strip()
         return text if TOKEN.search(text) else ""
@@ -226,7 +221,6 @@ def redact_sentence(sentence, entities):
             unit = clause_unit(token)
             if unit is None:
                 return ""
-            # A coordinated verb sharing the main subject is part of the same plot event.
             if unit.dep_ == "conj" and unit.head == sentence.root and unit.pos_ in {"VERB", "AUX"} and not any(child.dep_ in {"nsubj", "nsubjpass"} for child in unit.children):
                 return ""
             removed.update(part.i for part in unit.subtree)
@@ -249,7 +243,6 @@ def redact_sentence(sentence, entities):
     root = sentence.root
     if root.i in removed or any(child.i in removed for child in root.children if child.dep_ in {"nsubj", "nsubjpass"}):
         return ""
-    # A first-person reaction stripped of its cause reads incomplete; let rephrase_spoiler restore a vague cause.
     if removed and root.lemma_.lower() in REACTIONS and any(child.lower_ in {"i", "we"} for child in root.children if child.dep_ in {"nsubj", "nsubjpass"}):
         return ""
     parts = []
@@ -322,7 +315,6 @@ def reaction_clause(sentence, entities, moment):
         emotional = bool(re.search(r"\b(?:tissues?|cry|cried|crying|tears|sob\w*|chills?|goosebumps)\b", text, re.I))
         if not (personal or imperative or emotional) and abs(REVIEW_SENTIMENT.polarity_scores(text)["compound"]) < 0.05:
             continue
-        # A participle that only describes the hidden fact ("hiding in plain sight") is part of the spoiler.
         if token.dep_ == "advcl" and token.tag_ in {"VBG", "VBN"} and not (personal or emotional):
             continue
         connectors = {part.i for part in clause if part.head == token and part.i < token.i and part.dep_ in {"cc", "mark"} and part.lower_ in {"and", "but", "which", "that", "as", "while", "so"}}
@@ -377,13 +369,11 @@ def rephrase_spoiler(sentence, entities):
         reaction = "".join(token.text_with_ws for token in head).strip()
         return tidy(reaction + (" by " if root.tag_ == "VBN" else " ") + moment), True
     salvaged = reaction_clause(sentence, entities, moment)
-    # The vague moment phrase itself ("the big reveal", "the ending") is safe; check only the reviewer's words.
     if salvaged and not cue_spans(re.sub(re.escape(moment), "", salvaged, flags=re.I), entities):
         return salvaged, True
     predicates = [child for child in root.children if child.dep_ in {"acomp", "oprd"}]
     predicates += [conj for predicate in predicates for conj in predicate.conjuncts]
     words = [word for word in (appraisal_word(token) for token in sorted(set(predicates), key=lambda token: token.i)) if word]
-    # Praise for a craft feature ("the visual effects are stunning") must not be moved onto the plot.
     craft_subject = any(part.lemma_.lower() in FEATURES for subject in subjects for part in subject.subtree)
     factual_description = any(EVENTS.search(word) or OUTCOMES.search(word) for word in words)
     if words and root.lemma_ == "be" and not craft_subject and not factual_description:
@@ -413,8 +403,6 @@ def rephrase_spoiler(sentence, entities):
     return FALLBACK_MARKER + spoiler_kind(sentence, moment), False
 
 
-# Placeholder for a spoiler sentence with no reviewer opinion to keep. write_source_review swaps it
-# for a varied, natural line so a review never repeats the same filler.
 FALLBACK_MARKER = "\x00fallback:"
 FALLBACK_LINES = {
     "ending": [
@@ -630,7 +618,6 @@ def write_source_review(report, reviews, entities, title):
         candidates = [passage["text"]] if passage["text"] else []
         original_kept |= bool(candidates)
         if passage["withheld"]:
-            # Rewrite rather than delete, but avoid stacking content-free vague sentences.
             if passage["rephrased"] and (passage["evaluative"] or not candidates):
                 candidates.append(passage["rephrased"])
             if not passage["text"]:
@@ -645,7 +632,6 @@ def write_source_review(report, reviews, entities, title):
                 groups.setdefault(passage["key"][0], []).append(text)
     if not original_kept and not any(passage["evaluative"] for passage in passages):
         paragraphs, groups = [], {}
-    # Turn fallback markers into varied, non-repeating lines across the whole review.
     used = set()
     groups = {key: fill_fallbacks(group, used) for key, group in groups.items()}
     groups = {key: group for key, group in groups.items() if group}

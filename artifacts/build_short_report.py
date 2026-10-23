@@ -113,7 +113,6 @@ def table(rows, widths, header=True, size=9):
             add_runs(p, value, bold=(header and r == 0), size=size)
             if header and r == 0:
                 shade(cell, "DCE6F1")
-    # Keep the whole table (and its caption above) on one page.
     for r, row in enumerate(t.rows):
         trPr = row._tr.get_or_add_trPr()
         cant = OxmlElement("w:cantSplit")
@@ -126,7 +125,6 @@ def table(rows, widths, header=True, size=9):
     return t
 
 
-# ---------------- Title ----------------
 para("ClearCut: Rule-Based Spoiler-Free Rewriting of Movie and Series Reviews", bold=True, size=15,
      align=WD_ALIGN_PARAGRAPH.CENTER, after=1, color=(0x1F, 0x3A, 0x5F))
 para("Natural Language Processing Project Report", italic=True, size=10, align=WD_ALIGN_PARAGRAPH.CENTER, after=1)
@@ -134,7 +132,6 @@ para("Tejeshwar  |  [Roll number, programme, institution]  |  Submitted to: [Pro
      size=9, align=WD_ALIGN_PARAGRAPH.CENTER, after=1)
 para("Code: https://github.com/tejeshwar20/clearcut", size=9, align=WD_ALIGN_PARAGRAPH.CENTER, after=3)
 
-# ---------------- Abstract ----------------
 heading("Abstract")
 para("Reviews often reveal plot twists, deaths and endings. ClearCut is a web application that takes a pasted English review "
      "and returns the same review with only the spoiler sentences rewritten; every other sentence is kept word for word. "
@@ -144,21 +141,18 @@ para("Reviews often reveal plot twists, deaths and endings. ClearCut is a web ap
      "spoilers, changed 0 of 20 harmless sentences, kept 48 of 48 harmless sentences around a spoiler, and responded in about 20 ms "
      "(short) to 130 ms (300 words). These tests are not an independent benchmark.")
 
-# ---------------- Introduction ----------------
 heading("1. Introduction")
 para("Readers who want a reviewer's opinion but not the plot have few options. Sites offer spoiler tags, and extensions blur "
      "keyword matches, but both hide the opinion along with the plot. ClearCut instead rewrites the spoiler and keeps the "
      "opinion. For example, \u201cGreat visuals. It was all a simulation the whole time, which blew my mind.\u201d becomes "
      "\u201cGreat visuals. The big surprise blew my mind.\u201d The reviewer's reaction survives and the revealed fact does not.")
 
-# ---------------- Problem statement ----------------
 heading("2. Problem statement")
 para("Given a free-text review, produce a version that **(a)** discloses no plot information, **(b)** keeps every sentence that "
      "does not disclose plot exactly as written, and **(c)** keeps the reviewer's reaction wherever this is safe. "
      "Existing spoiler-detection research mostly labels text as spoiler / not spoiler; this project goes further and "
      "rewrites the text, under the strict constraint that harmless text is never altered.")
 
-# ---------------- Solution approach ----------------
 heading("3. Solution approach")
 para("**Model.** There is no trained model. A transparent rule-based pipeline was chosen because no labelled spoiler data was "
      "available, because \u201cother sentences stay identical\u201d is easy to guarantee with rules but not with a generative "
@@ -195,7 +189,6 @@ para("**Design decisions.** A sentence-embedding \u201csemantic\u201d layer was 
      "sentences and raised memory from about 238 MB to 398 MB. An estimated review score was also removed, because it was only a "
      "guess from wording and not part of the task.", before=2)
 
-# ---------------- Experimental results ----------------
 heading("4. Experimental results")
 para("A script (`artifacts/measure.py`) runs fixed test sets through the live pipeline. Each spoiler case is a harmless opening "
      "sentence followed by a spoiler; the test lists terms that must not appear in the output. Cases were written by the "
@@ -235,7 +228,6 @@ para("**Limitations.** Rules cover only anticipated phrasings, so an unusual spo
      "design; only English is supported; and accuracy on real reviews is unknown until tested on an independent, labelled set "
      "(planned: 100 or more reviews, two annotators).")
 
-# ---------------- Data source ----------------
 heading("5. Data source")
 para("The system uses **no training data**. Test and evaluation data are as follows.", after=1)
 bullet("**Test reviews and spoiler sentences:** written by the developer, based on the plots of well-known films (for example "
